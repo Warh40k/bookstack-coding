@@ -2,18 +2,14 @@ package pkg
 
 import (
 	"bufio"
-	"bytes"
-	"fmt"
 	"io"
-	"math"
 	"os"
-	"strings"
 )
 
 const ALPHABET_SIZE = 256
 
 // GetSequence получить входные данные из файла
-func GetSequence(inputPath string) ([]rune, error) {
+func GetSequence(inputPath string) ([]byte, error) {
 	file, err := os.Open(inputPath)
 	if err != nil {
 		return nil, err
@@ -22,13 +18,13 @@ func GetSequence(inputPath string) ([]rune, error) {
 
 	reader := bufio.NewReader(file)
 
-	var inputSeq = make([]rune, 0)
+	var inputSeq = make([]byte, 0)
 	for {
-		r, _, err := reader.ReadRune()
+		b, err := reader.ReadByte()
 		if err == io.EOF {
 			break
 		}
-		inputSeq = append(inputSeq, r)
+		inputSeq = append(inputSeq, b)
 	}
 	return inputSeq, nil
 }
@@ -49,38 +45,11 @@ func SaveSequence(outputPath string, outputSeq []byte) error {
 	return nil
 }
 
-func GetAlphabet() []rune {
-	var alph = make([]rune, ALPHABET_SIZE)
-	var i rune
+func GetAlphabet() []byte {
+	var alph = make([]byte, ALPHABET_SIZE)
+	var i int
 	for i = ALPHABET_SIZE - 1; i >= 0; i-- {
-		alph[i] = i
+		alph[i] = byte(i)
 	}
 	return alph
-}
-
-func GetUnar(rng int) string {
-	bcount := int(math.Log2(float64(rng+1))) + 1
-	binrng := []rune(fmt.Sprintf("%b", rng))[1:]
-	return fmt.Sprintf(strings.Repeat("1", bcount-1)+"0"+"%s", string(binrng))
-}
-
-func ConvertToBytes(bitstr bytes.Buffer) []byte {
-	buflen := bitstr.Len()
-	var result = make([]byte, int(math.Ceil(float64(buflen/8))))
-	var bufstring = bitstr.String()
-	for i := 0; i < buflen-8; i += 8 {
-		var b byte
-
-		for j := 0; j < 8; j++ {
-			b = b << 1
-			if i+j >= buflen {
-				continue
-			}
-			if bufstring[i+j] == '1' {
-				b = b | 1
-			}
-		}
-		result[i/8] = b
-	}
-	return result
 }
