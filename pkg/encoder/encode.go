@@ -29,20 +29,20 @@ func Encode(inputSeq []byte) []byte {
 				rng++
 			}
 		}
-		encodedSym := getUnar(rng)
+		encodedSym := GetUnar(rng)
 		bitstr.WriteString(encodedSym)
 	}
 
 	result := convertToBytes(&bitstr)
-	//fmt.Println(bitstr.Bytes())
+
 	return result
 }
 
-func getUnar(rng int) string {
-	rng++ // прибавляем единицу (чтобы не брать log2 от 0)
+func GetUnar(rng int) string {
+	rng += 2 // прибавляем единицу (чтобы не брать log2 от 0 и 1)
 	bcount := int(math.Log2(float64(rng)))
 	bin := fmt.Sprintf("%b", rng)[1:] // отсекаем старший бит (он всегда равен 1)
-	return fmt.Sprintf(strings.Repeat("1", bcount)+"0"+"%s", bin)
+	return fmt.Sprintf(strings.Repeat("1", bcount-1)+"0"+"%s", bin)
 }
 
 func convertToBytes(bitstr *bytes.Buffer) []byte {

@@ -56,8 +56,8 @@ func getBytesFromBinary(inputSeq []byte) []byte {
 		}
 
 		if b == 0 {
-			num := seq.Next(unar)
-			resBuf.WriteByte(parseBinary(unar, num))
+			num := seq.Next(unar + 1)
+			resBuf.WriteByte(parseBinary(unar+1, num))
 			unar = 0
 		} else {
 			unar++
@@ -77,7 +77,7 @@ func parseBinary(n int, bin []byte) byte {
 		result += 1 << i * bin[n-i-1]
 	}
 	result += 1 << i
-	result--
+	result -= 2
 
 	return result
 }
