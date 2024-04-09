@@ -2,23 +2,50 @@ package decoder
 
 import (
 	"bytes"
-	"fmt"
 	"io"
+	"slices"
 )
 
+var alph = []byte{'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M', 'L', 'K', 'J', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A', ' '}
+
 func Decode(inputSeq []byte) []byte {
-	// вытащить битовое каждого байта
-	// пробежаться по полученной строке
-	// извлекать унарный код и декодировать следующие n бит числа
 	// используя алфавит, декодировать числа в исходные байты
-	var seq = bytes.Buffer{}
+	rngBytes := getBytesFromBinary(inputSeq)
+	m := len(alph)
+	result := make([]byte, len(rngBytes))
+	workSeq := slices.Concat(alph, result)
+	var encountered map[byte]bool
+
+	for i := m; i < len(workSeq); i++ {
+		encountered = make(map[byte]bool)
+		rng := int(rngBytes[i-m])
+		var j = i - 1
+
+		for {
+			if !encountered[workSeq[j]] {
+				encountered[workSeq[j]] = true
+				rng--
+				if rng < 0 {
+					break
+				}
+			}
+			j--
+		}
+		workSeq[i] = workSeq[j]
+		result[i-m] = workSeq[i]
+	}
+
+	return result
+}
+
+func getBytesFromBinary(inputSeq []byte) []byte {
+	var seq, resBuf bytes.Buffer
 
 	seq.Grow(len(inputSeq) * 8)
 	for _, b := range inputSeq {
 		writeBits(&seq, b)
 	}
-	//fmt.Println(seq.Bytes())
-	var resBytes bytes.Buffer
+
 	var unar int
 	for {
 		b, err := seq.ReadByte()
@@ -27,26 +54,16 @@ func Decode(inputSeq []byte) []byte {
 		}
 
 		if b == 0 {
-			//n-- // учет манипуляций энкодера
 			num := seq.Next(unar)
-			resBytes.WriteByte(parseBinary(unar, num))
+			resBuf.WriteByte(parseBinary(unar, num))
 			unar = 0
 		} else {
 			unar++
 		}
 	}
 
-	fmt.Println(resBytes.Bytes())
-	return nil
+	return resBuf.Bytes()
 }
-
-/*func parseUnar(n int, unar []byte) int {
-	var result byte
-	for i := n; i >= 0; i-- {
-		result += 1 << i * unar[i]
-	}
-	return int(result)
-}*/
 
 func parseBinary(n int, bin []byte) byte {
 	if n == 0 {
