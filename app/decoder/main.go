@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 var isDir bool
@@ -21,7 +22,7 @@ func main() {
 		fmt.Printf("error opening input file: %s\n", err)
 		os.Exit(1)
 	}
-	var files []string
+	var inFiles []string
 	var dirs []string
 	if info.IsDir() {
 		isDir = true
@@ -29,7 +30,7 @@ func main() {
 			if d.IsDir() {
 				dirs = append(dirs, path)
 			} else {
-				files = append(files, path)
+				inFiles = append(inFiles, path)
 			}
 			return nil
 		})
@@ -38,34 +39,43 @@ func main() {
 			os.Exit(1)
 		}
 	} else {
-		files = append(files, os.Args[1])
+		inFiles = append(inFiles, os.Args[1])
 	}
 
 	info, err = os.Stat(os.Args[2])
-	if isDir && os.IsNotExist(err) {
-		err = os.MkdirAll(os.Args[2], 0777)
+	if os.IsNotExist(err) {
+		err = os.MkdirAll(filepath.Dir(os.Args[2]), 0777)
+		if err != nil {
+			fmt.Printf("error creating output directory: %s\n", err)
+			os.Exit(1)
+		}
+	}
+	for _, dir := range dirs {
+		err = os.MkdirAll(filepath.Join(os.Args[2], strings.Split(dir, os.Args[1])[1]), 0777)
 		if err != nil {
 			fmt.Printf("error creating output directory: %s\n", err)
 			os.Exit(1)
 		}
 	}
 
-	for _, file := range files {
-		go func() {
-			inputSeq, err := pkg.GetSequence(file)
-			if err != nil {
-				fmt.Printf("error opening input file: %s\n", err)
-				os.Exit(1)
-			}
-			encodedSeq := decoder.Decode(inputSeq)
+	for i := 0; i < len(inFiles); i++ {
+		inputSeq, err := pkg.GetSequence(inFiles[i])
+		if err != nil {
+			fmt.Printf("error opening input file: %s\n", err)
+			os.Exit(1)
+		}
+		encodedSeq := decoder.Decode(inputSeq)
 
-			err = pkg.SaveSequence(os.Args[2], encodedSeq)
-			if err != nil {
-				fmt.Printf("error creating output file: %s\n", err)
-				os.Exit(1)
-			}
-		}()
+		var outPath = os.Args[2]
+		if isDir {
+			outPath = strings.Replace(inFiles[i], os.Args[1], os.Args[2], 1)
+		}
 
+		err = pkg.SaveSequence(outPath, encodedSeq)
+		if err != nil {
+			fmt.Printf("error creating output file: %s\n", err)
+			os.Exit(1)
+		}
 	}
 
 }

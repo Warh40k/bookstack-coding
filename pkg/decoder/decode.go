@@ -2,13 +2,15 @@ package decoder
 
 import (
 	"bytes"
+	"github.com/Warh40k/bookstack-coding/pkg"
 	"io"
 	"slices"
 )
 
-var alph = []byte{'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M', 'L', 'K', 'J', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A', ' '}
+//var alph = []byte{'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M', 'L', 'K', 'J', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A', ' '}
 
 func Decode(inputSeq []byte) []byte {
+	alph := pkg.GetAlphabet()
 	// используя алфавит, декодировать числа в исходные байты
 	rngBytes := getBytesFromBinary(inputSeq)
 	m := len(alph)
