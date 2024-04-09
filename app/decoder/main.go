@@ -68,7 +68,7 @@ func main() {
 
 		var outPath = os.Args[2]
 		if isDir {
-			outPath = strings.Replace(inFiles[i], os.Args[1], os.Args[2], 1)
+			outPath = filepath.Join(os.Args[2], strings.Split(inFiles[i], os.Args[1])[1])
 		}
 
 		err = pkg.SaveSequence(outPath, encodedSeq)
