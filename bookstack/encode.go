@@ -1,9 +1,8 @@
-package encoder
+package bookstack
 
 import (
 	"bytes"
 	"fmt"
-	"github.com/Warh40k/bookstack-coding/pkg"
 	"math"
 	"slices"
 	"strings"
@@ -12,7 +11,7 @@ import (
 //var alph = []byte{'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M', 'L', 'K', 'J', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A', ' '}
 
 func Encode(inputSeq []byte) []byte {
-	alph := pkg.GetAlphabet()
+	alph := GetAlphabet()
 	//slices.Reverse(alph)
 	m := len(alph)
 	workingSeq := slices.Concat(alph, inputSeq)

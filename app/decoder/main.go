@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/Warh40k/bookstack-coding/pkg"
-	"github.com/Warh40k/bookstack-coding/pkg/decoder"
+	"github.com/Warh40k/bookstack-coding/bookstack"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -59,19 +58,18 @@ func main() {
 	}
 
 	for i := 0; i < len(inFiles); i++ {
-		inputSeq, err := pkg.GetSequence(inFiles[i])
+		inputSeq, err := bookstack.GetSequence(inFiles[i])
 		if err != nil {
 			fmt.Printf("error opening input file: %s\n", err)
 			os.Exit(1)
 		}
-		encodedSeq := decoder.Decode(inputSeq)
+		encodedSeq := bookstack.Decode(inputSeq)
 
 		var outPath = os.Args[2]
 		if isDir {
 			outPath = filepath.Join(os.Args[2], strings.Split(inFiles[i], os.Args[1])[1])
 		}
-
-		err = pkg.SaveSequence(outPath, encodedSeq)
+		err = bookstack.SaveSequence(outPath, encodedSeq)
 		if err != nil {
 			fmt.Printf("error creating output file: %s\n", err)
 			os.Exit(1)
