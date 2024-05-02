@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-//var alph = []byte{'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M', 'L', 'K', 'J', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A', ' '}
-
 func Encode(inputSeq []byte) []byte {
 	alph := GetAlphabet()
 	//slices.Reverse(alph)

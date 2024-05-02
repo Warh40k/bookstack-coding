@@ -37,10 +37,7 @@ func SaveSequence(outputPath string, outputSeq []byte) error {
 	}
 	defer file.Close()
 
-	writer := bufio.NewWriter(file)
-
-	writer.Write(outputSeq)
-	writer.Flush()
+	file.Write(outputSeq)
 
 	return nil
 }
