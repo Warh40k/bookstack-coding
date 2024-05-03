@@ -30,16 +30,20 @@ func GetSequence(inputPath string) ([]byte, error) {
 }
 
 // SaveSequence результат в файл
-func SaveSequence(outputPath string, outputSeq []byte) error {
+func SaveSequence(outputPath string, outputSeq []byte) (os.FileInfo, error) {
 	file, err := os.Create(outputPath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer file.Close()
 
 	file.Write(outputSeq)
+	info, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
 
-	return nil
+	return info, nil
 }
 
 func GetAlphabet() []byte {

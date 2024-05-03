@@ -71,7 +71,7 @@ func main() {
 			outPath = filepath.Join(os.Args[2], strings.Split(inFiles[i], os.Args[1])[1])
 		}
 
-		err = bookstack.SaveSequence(outPath, encodedSeq)
+		_, err = bookstack.SaveSequence(outPath, encodedSeq)
 		if err != nil {
 			fmt.Printf("error creating output file: %s\n", err)
 			os.Exit(1)
